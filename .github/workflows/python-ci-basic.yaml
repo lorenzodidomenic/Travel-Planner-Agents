@@ -8,16 +8,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    # 1. Installa uv (gestisce anche la cache in modo automatico)
-    - name: Set up uv
-      uses: astral-sh/setup-uv@v5
-      with:
-        python-version: '3.12'
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: '3.12'
+          cache-dependency-glob: pyproject.toml
 
-    # 2. Installa le dipendenze con uv (usando --system per l'ambiente globale del runner)
-    - name: Install dependencies
-      run: |
-        uv pip install --system -r pyproject.toml 
+      - name: Create venv and install dependencies
+        run: |
+          uv venv --python 3.12
+          uv pip install -r pyproject.toml
+
+      - name: Smoke test
+        run: .venv/bin/python -c "import fastapi, uvicorn, requests"
