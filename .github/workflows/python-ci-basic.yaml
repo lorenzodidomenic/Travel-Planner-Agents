@@ -19,7 +19,6 @@ jobs:
 
       - name: Create venv and install dependencies
         run: |
-          uv venv --python 3.12
           uv pip install -r pyproject.toml
 
       - name: Smoke test
