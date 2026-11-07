@@ -15,9 +15,9 @@ jobs:
     - name: Set up uv
       uses: astral-sh/setup-uv@v5
       with:
-        python-version: '3.10'
+        python-version: '3.12'
 
     # 2. Installa le dipendenze con uv (usando --system per l'ambiente globale del runner)
     - name: Install dependencies
       run: |
-        uv pip install --system -r requirements.txt
+        uv pip install --system -r pyproject.toml 
