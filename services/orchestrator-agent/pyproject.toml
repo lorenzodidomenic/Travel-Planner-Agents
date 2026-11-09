@@ -1,0 +1,21 @@
+[project]
+name = "orchestrator-agent"            # nome distribuito su PyPI (kebab-case)
+version = "0.1.0"                # oppure dynamic, vedi sotto
+description = "Orchestrator Agent: agente che scompone la richiesta e coordina gli altri agenti"
+requires-python = ">=3.11"       # vincolo di versione Python
+license = "MIT"                  # SPDX string (PEP 639) o { file = "LICENSE" }
+authors = [
+    { name = "Lorenzo Didomenico", email = "lorenzodidome03@gmail.com" },
+]
+dependencies = [
+    "requests>=2.31,<3",
+    "numpy>=1.26",
+    "deepagents",
+    "langchain-mcp-adapters",
+    "langchain-openai",
+    "fastapi",
+    "uvicorn"
+]
+
+[project.urls]
+Repository = "https://github.com/lorenzodidomenic/Travel-Planner-Agents.git"
