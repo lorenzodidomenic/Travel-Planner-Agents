@@ -15,11 +15,11 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           python-version: '3.12'
-          cache-dependency-glob: pyproject.toml
+          enable-cache: true
+          cache-dependency-glob: uv.lock
 
-      - name: Create venv and install dependencies
-        run: |
-          uv pip install -r pyproject.toml
+      - name: Install workspace (all packages + dev)
+        run: uv sync --frozen --all-packages
 
       - name: Smoke test
-        run: .venv/bin/python -c "import fastapi, uvicorn, requests"
+        run: uv run python -c "import travel_common, flight_agent, hotel_agent, itinerary_agent, orchestrator_agent, fastapi"

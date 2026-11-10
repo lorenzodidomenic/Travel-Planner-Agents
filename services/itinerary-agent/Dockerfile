@@ -1,3 +1,5 @@
+# Build dalla ROOT del repo (serve libs/common e uv.lock):
+#   docker build -f services/itinerary-agent/Dockerfile .
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -18,18 +20,21 @@ COPY --from=ghcr.io/astral-sh/uv:0.5.11 /uv /uvx /bin/
 
 WORKDIR /app
 
-# 1) Dependencies first, so this layer is cached until pyproject/uv.lock change.
-#    uv.lock* is optional: the build works even before a lock file exists.
-COPY pyproject.toml uv.lock* ./
-RUN uv sync --no-dev --no-install-project
+# 1) Solo i manifest del workspace: questo layer resta in cache finché non cambiano.
+COPY pyproject.toml uv.lock ./
+COPY libs/common/pyproject.toml libs/common/
+COPY services/itinerary-agent/pyproject.toml services/itinerary-agent/
+RUN uv sync --frozen --no-dev --package itinerary-agent --no-install-workspace
 
-# 2) Application code
-COPY src/ ./src/
+# 2) Codice: libreria comune + questo servizio
+COPY libs/common/ libs/common/
+COPY services/itinerary-agent/ services/itinerary-agent/
+RUN uv sync --frozen --no-dev --package itinerary-agent
 
 # Run as non-root
 RUN useradd --create-home --uid 10001 appuser \
     && chown -R appuser:appuser /app
 USER appuser
 
-EXPOSE 8000
-CMD ["uvicorn", "itinerary_agent.api:app", "--app-dir", "src", "--host", "0.0.0.0", "--port", "8000"]
+# Nessuna porta: l'agente parla solo con RabbitMQ (consuma itinerary.queue, pubblica su result.queue)
+CMD ["python", "-m", "itinerary_agent.consumer"]

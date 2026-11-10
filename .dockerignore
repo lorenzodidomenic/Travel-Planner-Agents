@@ -1,0 +1,14 @@
+**/.venv
+**/venv
+**/__pycache__
+**/*.pyc
+**/.env
+**/.env.*
+**/tests
+**/.pytest_cache
+**/.ruff_cache
+.git
+.github
+frontend
+infra
+scripts

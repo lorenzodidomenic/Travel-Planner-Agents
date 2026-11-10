@@ -1,3 +1,5 @@
+# Build dalla ROOT del repo (serve libs/common e uv.lock):
+#   docker build -f services/orchestrator-agent/Dockerfile .
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -18,13 +20,16 @@ COPY --from=ghcr.io/astral-sh/uv:0.5.11 /uv /uvx /bin/
 
 WORKDIR /app
 
-# 1) Dependencies first, so this layer is cached until pyproject/uv.lock change.
-#    uv.lock* is optional: the build works even before a lock file exists.
-COPY pyproject.toml uv.lock* ./
-RUN uv sync --no-dev --no-install-project
+# 1) Solo i manifest del workspace: questo layer resta in cache finché non cambiano.
+COPY pyproject.toml uv.lock ./
+COPY libs/common/pyproject.toml libs/common/
+COPY services/orchestrator-agent/pyproject.toml services/orchestrator-agent/
+RUN uv sync --frozen --no-dev --package orchestrator-agent --no-install-workspace
 
-# 2) Application code
-COPY src/ ./src/
+# 2) Codice: libreria comune + questo servizio
+COPY libs/common/ libs/common/
+COPY services/orchestrator-agent/ services/orchestrator-agent/
+RUN uv sync --frozen --no-dev --package orchestrator-agent
 
 # Run as non-root
 RUN useradd --create-home --uid 10001 appuser \
@@ -32,4 +37,4 @@ RUN useradd --create-home --uid 10001 appuser \
 USER appuser
 
 EXPOSE 8000
-CMD ["uvicorn", "orchestrator_agent.api:app", "--app-dir", "src", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "orchestrator_agent.api:app", "--host", "0.0.0.0", "--port", "8000"]

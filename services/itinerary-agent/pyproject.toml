@@ -1,21 +1,27 @@
 [project]
-name = "itinerary-agent"            # nome distribuito su PyPI (kebab-case)
-version = "0.1.0"                # oppure dynamic, vedi sotto
+name = "itinerary-agent"
+version = "0.1.0"
 description = "Itinerary Agent: agente per la pianificazione degli itinerari giornalieri"
-requires-python = ">=3.11"       # vincolo di versione Python
-license = "MIT"                  # SPDX string (PEP 639) o { file = "LICENSE" }
+requires-python = ">=3.11"
+license = "MIT"
 authors = [
     { name = "Lorenzo Didomenico", email = "lorenzodidome03@gmail.com" },
 ]
 dependencies = [
+    "travel-common",
     "requests>=2.31,<3",
     "numpy>=1.26",
     "deepagents",
     "langchain-mcp-adapters",
     "langchain-openai",
-    "fastapi",
-    "uvicorn"
 ]
 
 [project.urls]
 Repository = "https://github.com/lorenzodidomenic/Travel-Planner-Agents.git"
+
+[tool.uv.sources]
+travel-common = { workspace = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

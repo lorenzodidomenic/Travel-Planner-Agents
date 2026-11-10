@@ -1,0 +1,14 @@
+[project]
+name = "travel-common"
+version = "0.1.0"
+description = "Codice condiviso: contratti dei messaggi, client RabbitMQ, chiavi Redis, config"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [
+    { name = "Lorenzo Didomenico", email = "lorenzodidome03@gmail.com" },
+]
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
