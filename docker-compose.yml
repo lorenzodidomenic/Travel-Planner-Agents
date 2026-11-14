@@ -1,0 +1,50 @@
+name: travel planner
+
+
+services:
+  rabbitmq:
+    image: rabbitmq:4-management        # "-management" include la UI web
+    environment:
+      RABBITMQ_DEFAULT_USER: travel
+      RABBITMQ_DEFAULT_PASS: travel
+    ports:
+      - "5672:5672"                     # AMQP (usato dal codice)
+      - "15672:15672"                   # UI: http://localhost:15672
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: travel
+      POSTGRES_PASSWORD: travel
+      POSTGRES_DB: travel
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data  # i dati sopravvivono a "docker compose down"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U travel -d travel"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  rabbitmq_data:
+  pgdata:
